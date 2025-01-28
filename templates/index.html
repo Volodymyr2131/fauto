@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F-Auto — Головна</title>
+    <link rel="stylesheet" href="/static/navbar.css">
+    <style>
+        .main-content {
+            padding: 20px;
+            background-color: #fafafa;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 800px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .main-content h1 {
+            text-align: center;
+            color: #333;
+        }
+        .main-content ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .main-content li {
+            background: #fff;
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 300px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .main-content li:hover {
+            transform: scale(1.05);
+        }
+        .main-content img {
+            display: block;
+            margin: 0 auto 10px;
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .car-details {
+            text-align: center;
+        }
+        .car-details strong {
+            display: block;
+            font-size: 1.1em;
+            color: #333;
+            margin: 5px 0;
+        }
+        .car-details .price {
+            font-size: 1.2em;
+            color: #e74c3c;
+            margin-top: 10px;
+        }
+        .view-all {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .main-content li a {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            text-decoration: none;
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <a href="/">F-Auto</a>
+            <a href="/vin_check">Перевірка по VIN</a>
+        </div>
+        <div class="navbar-center">
+            <a href="/add_car" class="create-button">Створити оголошення</a>
+            <a href="/search" class="create-button">Пошук</a>
+        </div>
+        <div class="navbar-right">
+            {% if user_id %}
+                <a href="/chats">Чати</a>
+                <div class="user-info">
+                    {% if avatar %}
+                        <img src="/{{ avatar }}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer;" onclick="window.location.href='/profile/{{ user_id }}/';">
+                        {% else %}
+                            <img src="/static/default-avatar.jpg" alt="Default Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" onclick="window.location.href='/profile/{{ user_id }}/';">
+                    {% endif %}
+                    <a href="/logout" class="logout-button">Вийти</a>
+                </div>
+            {% else %}
+                <a href="/login">Увійти</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="main-content">
+        <ul>
+            {% for car in cars %}
+                <li>
+                    <a href="/car/{{ car.id }}">
+                        {% if car.image_url %}
+                            <img src="{{ car.image_url }}" alt="{{ car.make }} {{ car.model }}">
+                        {% endif %}
+                        <div class="car-details">
+                            <strong>{{ car.make }} {{ car.model }} {{ car.year }}</strong>
+                            <div class="price">{{ car.price }} USD</div>
+                            <div>Пробіг: {{ car.mileage }} км</div>
+                        </div>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

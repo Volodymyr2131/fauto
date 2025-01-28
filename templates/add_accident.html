@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Додати випадок ДТП</title>
+</head>
+<body>
+    <h1>Додати випадок ДТП</h1>
+    <form action="" method="post">
+        <label for="damage">Характер пошкоджень:</label>
+        <select id="damage" name="damage" required>
+            {% for item in damage %}
+                <option value="{{ item }}">{{ item }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <label for="date">Дата (якщо відома):</label>
+        <input type="date" id="date" name="date">
+        <br><br>
+        <button type="submit">Додати</button>
+    </form>
+</body>
+</html>

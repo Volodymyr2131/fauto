@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/navbar.css">
+    <title>F-Auto — Тех. Підтримка</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .main-content {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            max-width: 800px;
+            margin: 40px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .main-content h2 {
+            color: #555;
+            margin-top: 20px;
+        }
+
+        .main-content p {
+            color: #333;
+            margin: 10px 0;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+            resize: none;
+        }
+
+        input[type="submit"] {
+            background-color: #e7e7e7;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #d5d5d5;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007BFF;
+            font-size: 16px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <a href="/">F-Auto</a>
+            <a href="/vin_check">Перевірка по VIN</a>
+        </div>
+        <div class="navbar-center">
+            <a href="/add_car" class="create-button">Створити оголошення</a>
+            <a href="/search" class="create-button">Пошук</a>
+        </div>
+        <div class="navbar-right">
+            {% if current_user_id %}
+                <a href="/chats">Чати</a>
+                <div class="user-info">
+                    {% if current_avatar_url %}
+                        <img src="/{{ current_avatar_url }}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer;" onclick="window.location.href='/profile/{{ current_user_id }}/';">
+                    {% else %}
+                        <img src="/static/default-avatar.jpg" alt="Default Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" onclick="window.location.href='/profile/{{ current_user_id }}/';">
+                    {% endif %}
+                    <a href="/logout" class="logout-button">Вийти</a>
+                </div>
+            {% else %}
+                <a href="/login">Увійти</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h2>Тема: {{ request_t.subject }}</h2>
+        <p><strong>Повідомлення:</strong> {{ request_t.message }}</p>
+        <p><strong>Email:</strong> {{ request_t.email }}</p>
+        <p><strong>Статус:</strong> {{ request_t.status }}</p>
+
+        <h3>Повідомлення:</h3>
+        <ul>
+            {% for msg in messages %}
+            <li>
+                <a href="/profile/{{ msg.sender_id }}">{{ msg.sender }}</a>
+                <strong>Повідомлення:</strong> {{ msg.message }}<br>
+                <strong>Час:</strong> {{ msg.created_at }}
+            </li>
+            {% endfor %}
+        </ul>
+
+        <h3>Reply:</h3>
+        <form action="/support/reply/{{ request_id }}" method="POST">
+            <textarea name="reply_message" rows="4" cols="50" placeholder="Your reply" required></textarea><br>
+            <input type="submit" value="Send Response">
+        </form>
+        {% if request_t.status != 'closed' %}
+            <form action="/support/close_request/{{ request_id }}" method="POST">
+                <button type="submit" class="close-request-btn">Закрити запит</button>
+            </form>
+        {% endif %}
+    </div>
+</body>
+</html>

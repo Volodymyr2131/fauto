@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/navbar.css">
+    <title>F-Auto — Тех. Підтримка</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .main-content {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            max-width: 800px;
+            margin: 40px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .button-container a {
+            background-color: #e7e7e7;
+            color: #333;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-container a:hover {
+            background-color: #d5d5d5;
+        }
+
+        .close-request-btn {
+            background-color: #e7e7e7;
+            color: #333;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .close-request-btn:hover {
+            background-color: #d5d5d5;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <a href="/">F-Auto</a>
+            <a href="/vin_check">Перевірка по VIN</a>
+        </div>
+        <div class="navbar-center">
+            <a href="/add_car" class="create-button">Створити оголошення</a>
+            <a href="/search" class="create-button">Пошук</a>
+        </div>
+        <div class="navbar-right">
+            {% if current_user_id %}
+                <a href="/chats">Чати</a>
+                <div class="user-info">
+                    {% if current_avatar_url %}
+                        <img src="/{{ current_avatar_url }}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer;" onclick="window.location.href='/profile/{{ current_user_id }}/';">
+                    {% else %}
+                        <img src="/static/default-avatar.jpg" alt="Default Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" onclick="window.location.href='/profile/{{ current_user_id }}/';">
+                    {% endif %}
+                    <a href="/logout" class="logout-button">Вийти</a>
+                </div>
+            {% else %}
+                <a href="/login">Увійти</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1>Мої запити в підтримку</h1>
+        {% if user_requests %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Тема</th>
+                        <th>Статус</th>
+                        <th>Деталі</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in user_requests %}
+                    <tr>
+                        <td>{{ req.id }}</td>
+                        <td>{{ req.subject }}</td>
+                        <td>{{ req.status }}</td>
+                        <td><a href="/support/request/{{ req.id }}">Переглянути деталі</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Запитів до підтримки не знайдено.</p>
+        {% endif %}
+        <div class="button-container">
+            <a href="/support/request/new">Створити новий запит</a>
+        </div>
+    </div>
+</body>
+</html>

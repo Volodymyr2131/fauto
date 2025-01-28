@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F-Auto — Редагування оголошення</title>
+    <link rel="stylesheet" href="/static/navbar.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .main-content {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            max-width: 800px;
+            margin: 40px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #a1a1a1;
+            outline: none;
+        }
+
+        input[type="file"] {
+            border: none;
+        }
+
+        .submit-btn {
+            background-color: #e7e7e7;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #d5d5d5;
+        }
+
+        .readonly-input {
+            background-color: #f4f4f4;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<div class="navbar">
+    <div class="navbar-left">
+        <a href="/">F-Auto</a>
+        <a href="/vin_check">Перевірка по VIN</a>
+    </div>
+    <div class="navbar-center">
+        <a href="/add_car" class="create-button">Створити оголошення</a>
+        <a href="/search" class="create-button">Пошук</a>
+    </div>
+    <div class="navbar-right">
+        {% if user_id %}
+            <a href="/chats">Чати</a>
+            <div class="user-info">
+                {% if avatar %}
+                    <img src="/{{ avatar }}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer;" onclick="window.location.href='/profile/{{ user_id }}/';">
+                    {% else %}
+                        <img src="/static/default-avatar.jpg" alt="Default Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" onclick="window.location.href='/profile/{{ user_id }}/';">
+                {% endif %}
+                <a href="/logout" class="logout-button">Вийти</a>
+            </div>
+        {% else %}
+            <a href="/login">Увійти</a>
+        {% endif %}
+    </div>
+</div>
+<form action="/car/edit/{{ car_id }}" method="post" enctype="multipart/form-data">
+    <div class="main-content">
+        <h1>Редагування авто</h1>
+
+        <div class="form-group">
+            <label for="description">Опис</label>
+            <textarea id="description" name="description" required>{{ car_details.description }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="price">Ціна</label>
+            <input type="text" id="price" name="price" value="{{ car_details.price }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="mileage">Пробіг</label>
+            <input type="text" id="mileage" name="mileage" value="{{ car_details.mileage }}" required>
+        </div>
+
+        <button type="submit" class="submit-btn">Оновити авто</button>
+    </div>
+</form>

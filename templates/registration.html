@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Реєстрація</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            margin: 50px auto;
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .container h1 {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #e7e7e7;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .submit-btn:hover {
+            background-color: #d5d5d5;
+        }
+
+        .error {
+            text-align: center;
+            color: red;
+            margin-top: 10px;
+        }
+
+        .register-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #333;
+            font-weight: bold;
+        }
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .home-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .home-btn:hover {
+            background-color: #005f7f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Реєстрація</h1>
+        <form action="/registration/" method="post">
+            <label for="username">Ім'я користувача:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" required>
+
+            <label for="phone">Номер телефону:</label>
+            <input type="number" id="phone" name="phone" required>
+
+            <label for="surname">Прізвище:</label>
+            <input type="text" id="surname" name="surname" required>
+
+            <label for="name">Ім'я:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="lastname">По батькові:</label>
+            <input type="text" id="lastname" name="lastname" required>
+
+            <input type="submit" class="submit-btn" value="Зареєструватися">
+        </form>
+
+        <div class="error">
+            {% if error %}
+                {{ error }}
+            {% endif %}
+        </div>
+
+        <div class="register-link">
+            Вже є акаунт? <a href="/login">Увійти</a>
+        </div>
+
+        <button class="home-btn" onclick="window.location.href='/';">Повернутись на головну</button>
+    </div>
+</body>
+</html>

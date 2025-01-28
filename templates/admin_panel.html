@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Адмін панель</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .reject-button {
+            background-color: #dc3545;
+        }
+        .reject-button:hover {
+            background-color: #c82333;
+        }
+
+        .slideshow-container {
+            position: relative;
+            max-width: 100%;
+            margin: auto;
+            display: none;
+        }
+        .slides {
+            display: none;
+        }
+        img {
+            width: 300px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 16px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            border-radius: 3px;
+            user-select: none;
+            z-index: 1; /* Ensure buttons are on top */
+        }
+        .next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+        .prev:hover, .next:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <h1>Запити на оголошення</h1>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Інформація від автора</th>
+            <th>VIN Інформація</th>
+            <th>Зображення</th>
+            <th>Дія</th>
+        </tr>
+        {% for i in ads %}
+        <tr>
+            <td>{{ i.id }}</td>
+            <td>
+                <ul>
+                    <li>Тип автомобіля: {{ i.orig_info["type"] }}</li>
+                    <li>Марка: {{ i.orig_info["make"] }}</li>
+                    <li>Модель: {{ i.orig_info["model"] }}</li>
+                    <li>Покоління: {{ i.orig_info["generation"] }}</li>
+                    <li>Редизайн: {{ i.orig_info["facelift"] }}</li>
+                    <li>Рік виробництва: {{ i.orig_info["year"] }}</li>
+                    <li>Опис: {{ i.orig_info["description"] }}</li>
+                    <li>VIN-код: {{ i.orig_info["vin"] }} 
+                        <a href="https://bidfax.info/?do=search&subaction=search&story={{ i.orig_info['vin'] }}" target="_blank">Перевірити на ДТП</a>
+                    </li>
+                    <li>Вартість (Доллари): {{ i.orig_info["price"] }}</li>
+                    <li>Колір: {{ i.orig_info["color"] }}</li>
+                    <li>Стан лако-фарбового покриття: {{ i.orig_info["color_state"] }}</li>
+                    <li>Тип кузову: {{ i.orig_info["body_type"] }}</li>
+                    <li>Кількість дверей: {{ i.orig_info["doors"] }}</li>
+                    <li>Стан кузову: {{ i.orig_info["body_state"] }}</li>
+                    <li>Привід: {{ i.orig_info["wheel_drive"] }}</li>
+                    <li>Об'єм двигуна (Л): {{ i.orig_info["engine_displacement"] }}</li>
+                    <li>Тип трансмісії: {{ i.orig_info["transmition_type"] }}</li>
+                    <li>Пробіг (КМ): {{ i.orig_info["mileage"] }}</li>
+                    <li>Технічний стан: {{ i.orig_info["techstate"] }}</li>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <li>Тип автомобіля: {{ i.vin_info["Тип автомобіля"] }}</li>
+                    <li>Марка: {{ i.vin_info["Виробник"] }}</li>
+                    <li>Модель: {{ i.vin_info["Модель"] }}</li>
+                    <li>Рік виробництва: {{ i.vin_info["Рік виробництва"] }}</li>
+                    <li>Тип кузову: {{ i.vin_info["Тип кузову"] }}</li>
+                    <li>Кількість дверей: {{ i.vin_info["Кількість дверей"] }}</li>
+                    <li>Країна: {{ i.vin_info["Країна виробництва"] }}</li>
+                    <li>Об'єм двигуна (Л): {{ i.vin_info["Об'єм двигуна (Л)"] }}</li>
+                    <li>Тип палива: {{ i.vin_info["Тип палива"] }}</li>
+                    <li>Тип трансмісії: {{ i.vin_info["Тип трансмісії"] }}</li>
+                    <li>Привід: {{ i.vin_info["Привід"] }}</li>
+                </ul>
+            </td>
+            <td>
+                <div class="slideshow-container" id="slideshow-{{ i.id }}" style="display: none;">
+                    {% for image_url in i.image_urls %}
+                        <div class="slides">
+                            <img src="{{ image_url }}" alt="Car Image">
+                        </div>
+                    {% endfor %}
+                    <a class="prev" onclick="plusSlides(-1, {{ i.id }})">&#10094;</a>
+                    <a class="next" onclick="plusSlides(1, {{ i.id }})">&#10095;</a>
+                </div>
+                <button id="toggle-button-{{ i.id }}" onclick="toggleSlideshow({{ i.id }})">Показати зображення</button>
+            </td>
+            <td>
+                <form action="/approve/{{ i.id }}" method="post">
+                    <button type="submit">Схвалити</button>
+                </form>
+                <form action="/reject/{{ i.id }}" method="post">
+                    <button type="submit" class="reject-button">Відхилити</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Додати нову марку та модель</h2>
+    <form action="/admin/add_car_model" method="post">
+        <label for="make">Марка:</label>
+        <input type="text" id="make" name="make" required>
+        <br>
+        <label for="model">Модель:</label>
+        <input type="text" id="model" name="model" required>
+        <br>
+        <button type="submit">Додати</button>
+    </form>
+
+    <h2>Видалити марку або модель</h2>
+    <form action="/admin/delete_car_model" method="post">
+        <label for="make">Марка:</label>
+        <input type="text" id="make" name="make" placeholder="Марка" required>
+        <br>
+        <label for="model">Модель (необов'язково):</label>
+        <input type="text" id="model" name="model" placeholder="Модель">
+        <br>
+        <button type="submit">Видалити</button>
+    </form>
+    <p><em>Якщо вказати тільки марку, вона буде повністю видалена разом з усіма моделями.</em></p>
+
+    <script>
+        function toggleSlideshow(carId) {
+            const slideshow = document.getElementById("slideshow-" + carId);
+            const toggleButton = document.getElementById("toggle-button-" + carId);
+            if (slideshow.style.display === "none" || slideshow.style.display === "") {
+                slideshow.style.display = "block";
+                toggleButton.textContent = "Сховати зображення";
+                showSlides(1, carId);
+            } else {
+                slideshow.style.display = "none";
+                toggleButton.textContent = "Показати зображення";
+            }
+        }
+
+        function showSlides(slideIndex, carId) {
+            const slideshow = document.getElementById("slideshow-" + carId);
+            const slides = slideshow.getElementsByClassName("slides");
+            if (slideIndex > slides.length) { slideIndex = 1 }
+            if (slideIndex < 1) { slideIndex = slides.length }
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";  
+            }
+            slides[slideIndex - 1].style.display = "block";  
+        }
+
+        function plusSlides(n, carId) {
+            const slides = document.getElementById("slideshow-" + carId).getElementsByClassName("slides");
+            let slideIndex = Array.from(slides).findIndex(slide => slide.style.display === "block") + 1;
+            slideIndex += n;
+            showSlides(slideIndex, carId);
+        }
+
+    </script>
+</body>
+</html>

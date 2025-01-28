@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F-Auto — Створити оголошення</title>
+    <link rel="stylesheet" href="/static/navbar.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+    
+        .main-content {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            max-width: 800px;
+            margin: 40px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    
+        .main-content h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+    
+        .form-group {
+            margin-bottom: 15px;
+        }
+    
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+    
+        .form-group select,
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+    
+        .form-group select:focus,
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #a1a1a1;
+            outline: none;
+        }
+    
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+    
+        .form-group input[type="file"] {
+            border: none;
+        }
+    
+        input[type="submit"] {
+            background-color: #e7e7e7;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+    
+        input[type="submit"]:hover {
+            background-color: #d5d5d5;
+        }
+    
+        a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            background-color: #e7e7e7;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    
+        a:hover {
+            background-color: #d5d5d5;
+        }
+    </style>    
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <a href="/">F-Auto</a>
+            <a href="/vin_check">Перевірка по VIN</a>
+        </div>
+        <div class="navbar-center">
+            <a href="/add_car" class="create-button">Створити оголошення</a>
+            <a href="/search" class="create-button">Пошук</a>
+        </div>
+        <div class="navbar-right">
+            {% if user_id %}
+                <a href="/chats">Чати</a>
+                <div class="user-info">
+                    {% if avatar %}
+                        <img src="/{{ avatar }}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer;" onclick="window.location.href='/profile/{{ user_id }}/';">
+                        {% else %}
+                            <img src="/static/default-avatar.jpg" alt="Default Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" onclick="window.location.href='/profile/{{ user_id }}/';">
+                    {% endif %}
+                    <a href="/logout" class="logout-button">Вийти</a>
+                </div>
+            {% else %}
+                <a href="/login">Увійти</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="main-content">
+        <h1>Створити оголошення про автомобіль</h1>
+        <form action="/create_car" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="Type">Тип авто:</label>
+                <select id="Type" name="Type" required>
+                    <option value="" disabled selected>Оберіть тип авто</option>
+                    {% for i in car_types %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="Make">Виробник авто:</label>
+                <select id="Make" name="Make" required onchange="updateModels()">
+                    <option value="" disabled selected>Оберіть виробника авто</option>
+                    {% for manufacturer, models in car_manufacturers.items() %}
+                        <option value="{{ manufacturer }}">{{ manufacturer }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="Model">Модель:</label>
+                <select id="Model" name="Model" required>
+                    <option value="" disabled selected>Оберіть модель</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="Generation">Покоління:</label>
+                <select id="Generation" name="Generation" required>
+                    <option value="" disabled selected>Оберіть покоління</option>
+                    {% for i in car_generations %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+    
+            <div class="form-group">
+                <label for="Facelift">Редизайн (Якщо є):</label>
+                <select id="Facelift" name="Facelift">
+                    <option value="" disabled selected>Оберіть редизайн</option>
+                    {% for i in car_facelifts %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+    
+            <div class="form-group">
+                <label for="Year">Рік виготовлення:</label>
+                <select id="Year" name="Year" required>
+                    <option value="" disabled selected>Оберіть рік виготовлення</option>
+                    {% for i in years %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+    
+            <div class="form-group">
+                <label for="Price">Ціна (USD):</label>
+                <input type="number" step="0.01" id="Price" name="Price" required>
+            </div>
+    
+            <div class="form-group">
+                <label for="Description">Опис:</label>
+                <textarea id="Description" name="Description" required></textarea>
+            </div>
+    
+            <div class="form-group">
+                <label for="VIN">VIN-код:</label>
+                <input type="text" id="VIN" name="VIN" required minlength="17" maxlength="17" pattern="[A-Za-z0-9]{17}" title="Неправильний формат">
+            </div>
+    
+            <div class="form-group">
+                <label for="Color">Колір:</label>
+                <select id="Color" name="Color" required>
+                    <option value="" disabled selected>Оберіть колір авто</option>
+                    {% for i in car_colors %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+    
+            <div class="form-group">
+                <label for="ColorState">Стан лако-фарбового покриття:</label>
+                <select id="ColorState" name="ColorState" required>
+                    <option value="" disabled selected>Оберіть стан лако-фарбового покриття</option>
+                    {% for i in color_condition %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="BodyType">Тип кузову:</label><br>
+                <select id="BodyType" name="BodyType" required>
+                    <option value="" disabled selected>Оберіть тип кузову</option>
+                    {% for i in body_types %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+            </div>
+
+            <div class="form-group">
+                <label for="Doors">Кількість дверей:</label><br>
+                <select id="Doors" name="Doors" required>
+                    <option value="" disabled selected>Оберіть кілкьість дверей</option>
+                    {% for i in doors %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+            </div>
+            <div class="form-group">
+                <label for="BodyState">Стан кузову:</label><br>
+                <select id="BodyState" name="BodyState" required>
+                    <option value="" disabled selected>Оберіть стан кузову</option>
+                    {% for i in body_condition %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+            </div>
+
+            <div class="form-group">
+                <label for="Transmition">Трансмісія:</label><br>
+                <select id="Transmition" name="Transmition" required>
+                    <option value="" disabled selected>Оберіть тип трансмісії</option>
+                    {% for i in transimiton_list %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+            </div>
+            <div class="form-group">
+                <label for="WheelDrive">Привід:</label><br>
+                <select id="WheelDrive" name="WheelDrive" required>
+                    <option value="" disabled selected>Оберіть привід</option>
+                    {% for i in wheel_drive_list %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+            </div>
+            <div class="form-group">
+                <label for="EngineType">Тип двигуна:</label><br>
+                <select id="EngineType" name="EngineType" required>
+                    <option value="" disabled selected>Оберіть тип двигуна</option>
+                    {% for i in engine_types %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+            </div>
+            <div class="form-group">
+                <label for="EngineVolume">Обєм двигуна двигуна (Літри):</label><br>
+                <select id="EngineVolume" name="EngineVolume" required>
+                    <option value="" disabled selected>Оберіть об'єм</option>
+                    {% for i in engine_volumes %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+            </div>    
+            <div class="form-group">
+                <label for="Mileage">Пробіг (КМ):</label><br>
+                <input type="number" id="Mileage" name="Mileage" required><br><br>
+            </div>
+            <div class="form-group">
+                <label for="Interior">Матеріал салону:</label><br>
+                <select id="Interior" name="Interior" required>
+                    <option value="" disabled selected>Оберіть матеріл салону</option>
+                    {% for i in interior_material %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+            </div>
+            <div class="form-group">
+                <label for="TechState">Технічний стан:</label><br>
+                <select id="TechState" name="TechState" required>
+                    <option value="" disabled selected>Оберіть стан ходової</option>
+                    {% for i in tech_condition %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+            </div>
+            <div class="form-group">
+                <label for="images">Завантажити зображення:</label>
+                <input type="file" id="images" name="images" accept="image/*" multiple required>
+            </div>
+
+            <input type="submit" value="Створити оголошення">
+        </form>
+    </div>
+
+    <script>
+        const carModels = {{ car_manufacturers | tojson }};
+        function updateModels() {
+            const makeSelect = document.getElementById("Make");
+            const modelSelect = document.getElementById("Model");
+            const selectedMake = makeSelect.value;
+
+            modelSelect.innerHTML = '<option value="" disabled selected>Оберіть модель</option>';
+            if (selectedMake && carModels[selectedMake]) {
+                carModels[selectedMake].forEach(model => {
+                    const option = document.createElement("option");
+                    option.value = model;
+                    option.textContent = model;
+                    modelSelect.appendChild(option);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

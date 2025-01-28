@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Перевірка по VIN-коду</title>
+    <link rel="stylesheet" href="/static/navbar.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .main-content {
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 800px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .main-content h1 {
+            text-align: center;
+            color: #333;
+        }
+        .main-content form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .main-content input, .main-content button {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .main-content button {
+            background-color: #e7e7e7;
+            color: #333;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .main-content button:hover {
+            background-color: #d5d5d5;
+        }
+        .main-content ul {
+            list-style: none;
+            padding: 0;
+        }
+        .main-content li {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .error {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <a href="/">F-Auto</a>
+            <a href="/vin_check">Перевірка по VIN</a>
+        </div>
+        <div class="navbar-center">
+            <a href="/add_car" class="create-button">Створити оголошення</a>
+            <a href="/search" class="create-button">Пошук</a>
+        </div>
+        <div class="navbar-right">
+            {% if user_id %}
+                <a href="/chats">Чати</a>
+                <div class="user-info">
+                    {% if avatar %}
+                        <img src="/{{ avatar }}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer;" onclick="window.location.href='/profile/{{ user_id }}/';">
+                        {% else %}
+                            <img src="/static/default-avatar.jpg" alt="Default Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" onclick="window.location.href='/profile/{{ user_id }}/';">
+                    {% endif %}
+                    <a href="/logout">Вийти</a>
+                </div>
+            {% else %}
+                <a href="/login">Увійти</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1>Перевірка VIN-коду</h1>
+        <form method="get" action="/vin_check">
+            <input type="text" id="vin" name="vin" placeholder="Введіть VIN-код" required>
+            <button type="submit">Перевірити</button>
+        </form>
+
+        {% if vin_info %}
+        <h2>Результати перевірки:</h2>
+        <ul>
+            <li><strong>Тип автомобіля:</strong> {{ vin_info["Тип автомобіля"] or "Невідомо" }}</li>
+            <li><strong>Марка:</strong> {{ vin_info["Виробник"] or "Невідомо" }}</li>
+            <li><strong>Модель:</strong> {{ vin_info["Модель"] or "Невідомо" }}</li>
+            <li><strong>Рік виробництва:</strong> {{ vin_info["Рік виробництва"] or "Невідомо" }}</li>
+            <li><strong>Тип кузову:</strong> {{ vin_info["Тип кузову"] or "Невідомо" }}</li>
+            <li><strong>Кількість дверей:</strong> {{ vin_info["Кількість дверей"] or "Невідомо" }}</li>
+            <li><strong>Країна:</strong> {{ vin_info["Країна виробництва"] or "Невідомо" }}</li>
+            <li><strong>Об'єм двигуна (Л):</strong> {{ vin_info["Об'єм двигуна (Л)"] or "Невідомо" }}</li>
+            <li><strong>Тип палива:</strong> {{ vin_info["Тип палива"] or "Невідомо" }}</li>
+            <li><strong>Тип трансмісії:</strong> {{ vin_info["Тип трансмісії"] or "Невідомо" }}</li>
+            <li><strong>Привід:</strong> {{ vin_info["Привід"] or "Невідомо" }}</li>
+        </ul>
+        {% elif error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>

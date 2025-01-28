@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F-Auto — Мій профіль</title>
+    <link rel="stylesheet" href="/static/navbar.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .main-content {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            max-width: 800px;
+            margin: 40px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #a1a1a1;
+            outline: none;
+        }
+
+        input[type="file"] {
+            border: none;
+        }
+
+        input[type="submit"] {
+            background-color: #e7e7e7;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #d5d5d5;
+        }
+
+        .support-btn {
+            background-color: #e7e7e7;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .support-btn:hover {
+            background-color: #d5d5d5;
+        }
+
+        .ads {
+            margin-top: 30px;
+        }
+
+        .ads h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .ads ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .ads ul li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .ads ul li:hover {
+            background-color: #f7f7f7;
+        }
+
+        .ads ul li img {
+            width: 120px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+
+        .ads ul li div {
+            flex-grow: 1;
+        }
+
+        .ads ul li .car-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .ads ul li .car-info {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .ads ul li a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .ads ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .readonly-input {
+            background-color: #f4f4f4;
+            cursor: not-allowed;
+        }
+
+        .avatar-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar-container img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+
+        .avatar-container .change-avatar-btn {
+            background-color: #e7e7e7;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .avatar-container .change-avatar-btn:hover {
+            background-color: #d5d5d5;
+        }
+
+        .ad-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .ad-buttons button {
+            background-color: #e7e7e7;
+            color: #333;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .ad-buttons button:hover {
+            background-color: #d5d5d5;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <a href="/">F-Auto</a>
+            <a href="/vin_check">Перевірка по VIN</a>
+        </div>
+        <div class="navbar-center">
+            <a href="/add_car" class="create-button">Створити оголошення</a>
+            <a href="/search" class="create-button">Пошук</a>
+        </div>
+        <div class="navbar-right">
+            {% if user_id %}
+                <a href="/chats">Чати</a>
+                <div class="user-info">
+                    {% if avatar %}
+                        <img src="/{{ avatar }}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer;" onclick="window.location.href='/profile/{{ user_id }}/';">
+                    {% else %}
+                        <img src="/static/default-avatar.jpg" alt="Default Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" onclick="window.location.href='/profile/{{ user_id }}/';">
+                    {% endif %}
+                    <a href="/logout" class="logout-button">Вийти</a>
+                </div>
+            {% else %}
+                <a href="/login">Увійти</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="main-content">
+        <h1>Мій профіль</h1>
+        <form action="/profile/{{ user.id }}" method="POST" enctype="multipart/form-data">
+            <div class="avatar-container">
+                {% if user.avatar %}
+                    <img id="avatar-preview" src="/{{ user.avatar }}" alt="Avatar">
+                {% else %}
+                    <img id="avatar-preview" src="/static/default-avatar.jpg" alt="Default Avatar">
+                {% endif %}
+                <br>
+                <input type="file" name="avatar" accept="image/*" onchange="previewAvatar(event)">
+                <button type="submit" class="change-avatar-btn">Змінити аватарку</button>
+            </div>
+
+            <div class="form-group">
+                <label for="fullname">ПІБ:</label>
+                {% if is_admin %}
+                    <div class="form-group">
+                        <label for="surname">Прізвише:</label>
+                        <input type="text" id="surname" name="surname" value="{{ user.surname if user.surname else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Ім'я:</label>
+                        <input type="text" id="name" name="name" value="{{ user.name if user.name else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastname">По батькові:</label>
+                        <input type="text" id="lastname" name="lastname" value="{{ user.lastname if user.lastname else '' }}">
+                    </div>
+                {% else %}
+                    <input type="text" id="fullname" name="fullname" value="{{ user.fullname }}" readonly class="readonly-input">
+                    <div>
+                        <p>Для зміни ПІБ зв'яжіться з підтримкою</p>
+                    </div>
+                {% endif %}
+            </div>
+
+
+
+            <div class="form-group">
+                <label for="username">Нікнейм:</label>
+                <input type="text" id="username" name="username" value="{{ user.username }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="{{ user.email }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Номер телефону:</label>
+                <input type="phone" id="phone" name="phone" value="{{ user.phone }}" required>
+            </div>
+
+            <input type="submit" class="submit-btn" value="Зберегти зміни">
+        </form>
+
+        <div class="ads">
+            <h2>Мої оголошення</h2>
+            <ul>
+                {% for ad in ads %}
+                    <li onclick="window.location.href='/car/{{ ad.id }}'">
+                        <img src="{{ ad.image_url }}" alt="Car Image">
+                        <div>
+                            <div class="car-title">{{ ad.title }}</div>
+                            <div class="car-info">
+                                <p>{{ ad.brand }} {{ ad.model }}</p>
+                                <p>{{ ad.year }} | {{ ad.mileage }} км | {{ ad.price }} грн</p>
+                            </div>
+                        </div>
+                        <div class="ad-buttons">
+                            <button onclick="event.stopPropagation(); window.location.href='/car/edit/{{ ad.id }}'">Редагувати оголошення</button>
+                            <button onclick="confirmDelete(event, '{{ ad.id }}')">Видалити оголошення</button>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="main-content">
+            {% if is_admin %}
+                <a href="/support/requests">Тех. Підтримка</a>
+                <a href="/admin">Панель</a>
+            {% else %}
+                <a href="/support/my-requests">Тех. Підтримка</a>
+            {% endif %}
+        <div>
+
+    </div>
+    <script>
+        function previewAvatar(event) {
+            const preview = document.getElementById('avatar-preview');
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+            };
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+        function confirmDelete(event, carId) {
+        event.stopPropagation();
+        
+        const confirmation = confirm("Ви впевпені, що бажаєте видалити оголошення?");
+        
+        if (confirmation) {
+            window.location.href = '/car/delete/' + carId;
+        }
+    }
+    </script>
+</body>
+</html>
