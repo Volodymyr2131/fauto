@@ -1088,9 +1088,7 @@ async def request_detail_page(request: Request, request_id: int, current_user: d
         raise HTTPException(status_code=500, detail=f"Error occurred: {str(e)}")
 
 @app.post("/support/reply/{request_id}")
-async def reply_to_support_request(request_id: int, reply_message: str = Form(...), current_user: dict = Depends(get_current_user), admin_user: Optional[dict] = Depends(require_admin),):
-    if not admin_user:
-        raise HTTPException(status_code=403, detail="Access denied")
+async def reply_to_support_request(request_id: int, reply_message: str = Form(...), current_user: dict = Depends(get_current_user),):
 
     user_info = None
     username = None
@@ -1165,7 +1163,7 @@ async def get_user_requests(request: Request, current_user: dict = Depends(get_c
         raise HTTPException(status_code=500, detail=f"Error fetching user requests: {str(e)}")
 
 @app.post("/support/close_request/{request_id}")
-async def close_request(request_id: int, current_user: dict = Depends(get_current_user)):
+async def close_request(request_id: int, current_user: dict = Depends(get_current_user), admin_user: dict = Depends(require_admin)):
     async with aiosqlite.connect("FAutoBase.db") as db:
         async with db.execute("SELECT user_id FROM support_requests WHERE id = ?", (request_id,)) as cursor:
             request = await cursor.fetchone()
@@ -1186,31 +1184,33 @@ async def close_request(request_id: int, current_user: dict = Depends(get_curren
     async with aiosqlite.connect("FAutoBase.db") as db:
         await db.execute("UPDATE support_requests SET status = ? WHERE id = ?", ("closed", request_id))
         await db.commit()
-
-    return RedirectResponse(url="/support/requests", status_code=302)
+    if admin_user:
+        return RedirectResponse(url="/support/requests", status_code=302)
+    else:
+        return RedirectResponse(url="/support/my-requests", status_code=302)
 
 @app.get("/add-accident/{car_id}", response_class=HTMLResponse)
-async def add_accident_form(request: Request, car_id: str, admin_user: Optional[dict] = Depends(require_admin)):
+async def add_accident_form(request: Request, car_id: int, admin_user: Optional[dict] = Depends(require_admin)):
     if not admin_user:
         raise HTTPException(status_code=403, detail="Access denied")
     return templates.TemplateResponse("add_accident.html", {"request": request, "damage": damage, "car_id": car_id})
 
 @app.post("/add-accident/{car_id}")
-async def add_accident(car_id: str, damage: str = Form(...), date: str = Form(None), admin_user: Optional[dict] = Depends(require_admin)):
+async def add_accident(car_id: int, damage: str = Form(...), date: str = Form(None), admin_user: Optional[dict] = Depends(require_admin)):
     if not admin_user:
         raise HTTPException(status_code=403, detail="Access denied")
     async with aiosqlite.connect("FAutoBase.db") as db:
         await db.execute('''INSERT INTO car_accidents (car_id, damage_description, accident_date) VALUES (?, ?, ?)''', (car_id, damage, date))
         await db.commit()
 
-    return RedirectResponse(url="/car/{car_id}", status_code=302)
+    return RedirectResponse(url=f"/car/{car_id}", status_code=302)
 
-@app.post("/delete_accident/{car_id}")
-async def delete_accident(car_id: int, accident_id: int = Form(...), current_user: dict = Depends(get_current_user), admin_user: Optional[dict] = Depends(require_admin)):
+@app.get("/delete_accident/{car_id}")
+async def delete_accident(car_id: int, current_user: dict = Depends(get_current_user), admin_user: Optional[dict] = Depends(require_admin)):
     if not admin_user:
         raise HTTPException(status_code=403, detail="Access denied")
     async with aiosqlite.connect("FAutoBase.db") as db:
-        await db.execute("DELETE FROM accident_history WHERE car_id = ? AND id = ?",(car_id, accident_id))
+        await db.execute("DELETE FROM car_accidents WHERE id = ?", (car_id,))
         await db.commit()
 
     return RedirectResponse(url=f"/car/{car_id}", status_code=302)
